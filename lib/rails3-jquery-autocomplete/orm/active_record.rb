@@ -31,7 +31,7 @@ module Rails3JQueryAutocomplete
 
       def get_autocomplete_select_clause(model, method, options)
         table_name = model.table_name
-        columns = method.is_a?(Array) ? method : [method]
+        columns = options[:search_columns].is_a?(Array) ? options[:search_columns] : [method]
         columns = columns.map {|column_name|  "#{table_name}.#{column_name}"}
         extra_columns = (options[:extra_data].blank? ? [] : options[:extra_data])
         (["#{table_name}.#{model.primary_key}"] + columns + extra_columns)
@@ -42,7 +42,7 @@ module Rails3JQueryAutocomplete
         query = "#{(options[:full] ? '%' : '')}#{term.downcase}%"
         like_clause = (postgres? ? 'ILIKE' : 'LIKE')
 
-        columns = method.is_a?(Array) ? method : [method]
+        columns = options[:search_columns].is_a?(Array) ? options[:search_columns] : [method]
         where = columns.map {|column_name|  "LOWER(#{table_name}.#{column_name}) #{like_clause} ?"}
 
         [where.join(" OR "), where.times.map {query} ]
