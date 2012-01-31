@@ -9,14 +9,14 @@ module Rails3JQueryAutocomplete
       end
 
       def get_autocomplete_items(parameters)
-        model   = parameters[:model]
-        term    = parameters[:term]
-        method  = parameters[:method]
+        model = parameters[:model]
+        term = parameters[:term]
+        method = parameters[:method]
         options = parameters[:options]
-        scopes  = Array(options[:scopes])
-        where   = options[:where]
-        limit   = get_autocomplete_limit(options)
-        order   = get_autocomplete_order(method, options, model)
+        scopes = Array(options[:scopes])
+        where = options[:where]
+        limit = get_autocomplete_limit(options)
+        order = get_autocomplete_order(method, options, model)
         items = model.scoped
 
         scopes.each { |scope| items = items.send(scope) } unless scopes.empty?
@@ -32,7 +32,7 @@ module Rails3JQueryAutocomplete
       def get_autocomplete_select_clause(model, method, options)
         table_name = model.table_name
         columns = options[:search_columns].is_a?(Array) ? options[:search_columns] : [method]
-        columns = columns.map {|column_name|  "#{table_name}.#{column_name}"}
+        columns = columns.map {|column_name| "#{table_name}.#{column_name}"}
         extra_columns = (options[:extra_data].blank? ? [] : options[:extra_data])
         (["#{table_name}.#{model.primary_key}"] + columns + extra_columns)
       end
@@ -43,9 +43,8 @@ module Rails3JQueryAutocomplete
         like_clause = (postgres? ? 'ILIKE' : 'LIKE')
 
         columns = options[:search_columns].is_a?(Array) ? options[:search_columns] : [method]
-        where = columns.map {|column_name|  "LOWER(#{table_name}.#{column_name}) #{like_clause} ?"}
-
-        [where.join(" OR "), where.map {query} ]
+        where = columns.map {|column_name| "LOWER(#{table_name}.#{column_name}) #{like_clause} :q"}
+        [where.join(" OR "), :q => query]
       end
 
       def postgres?
