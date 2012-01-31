@@ -45,7 +45,7 @@ module Rails3JQueryAutocomplete
         columns = options[:search_columns].is_a?(Array) ? options[:search_columns] : [method]
         where = columns.map {|column_name|  "LOWER(#{table_name}.#{column_name}) #{like_clause} ?"}
 
-        [where.join(" OR "), where.times.map {query} ]
+        [where.join(" OR "), where.map {query} ]
       end
 
       def postgres?
